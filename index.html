@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tycoon Game</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        .character {
+            font-size: 100px;
+            margin: 20px 0;
+            animation: bounce 2s infinite;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        .stats {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+        .money {
+            font-size: 40px;
+            font-weight: bold;
+            color: gold;
+            margin: 10px 0;
+        }
+        .buttons {
+            display: grid;
+            gap: 10px;
+        }
+        button {
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        button:active {
+            transform: scale(0.95);
+        }
+        .work-btn {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+        .business-btn {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+        .level {
+            background: rgba(255,255,255,0.2);
+            padding: 10px;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 From Zero → Tycoon</h1>
+        
+        <div class="character" id="character">👨‍💼</div>
+        
+        <div class="stats">
+            <div id="playerName">Игрок</div>
+            <div class="money">$<span id="money">0</span></div>
+            <div class="level">Уровень: <span id="level">1</span></div>
+            <div>Доход/час: $<span id="hourlyIncome">0</span></div>
+        </div>
+        
+        <div class="buttons">
+            <button class="work-btn" onclick="work()">💼 Работать</button>
+            <button class="business-btn" onclick="showBusinesses()">🏪 Бизнесы</button>
+        </div>
+        
+        <div id="businessesList" style="display:none; margin-top:20px;">
+            <h3>Доступные бизнесы</h3>
+            <div id="businesses"></div>
+        </div>
+    </div>
+    
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+        
+        let money = 1000;
+        let level = 1;
+        
+        function updateUI() {
+            document.getElementById('money').textContent = money;
+            document.getElementById('level').textContent = level;
+            
+            // Меняем персонажа по уровню
+            const characters = ['🧍', '👷', '👨‍💼', '🤵', '🕴️', '👑'];
+            const charIndex = Math.min(level - 1, characters.length - 1);
+            document.getElementById('character').textContent = characters[charIndex];
+        }
+        
+        function work() {
+            const income = Math.floor(Math.random() * 30) + 10;
+            money += income;
+            updateUI();
+            
+            // Анимация
+            const char = document.getElementById('character');
+            char.style.transform = 'scale(1.2)';
+            setTimeout(() => char.style.transform = 'scale(1)', 300);
+            
+            tg.HapticFeedback.impactOccurred('medium');
+        }
+        
+        function showBusinesses() {
+            const list = document.getElementById('businessesList');
+            list.style.display = 'block';
+            
+            const businesses = [
+                {name: '🚚 Киоск', price: 100, income: 10},
+                {name: '☕ Кафе', price: 500, income: 50},
+                {name: '🛒 Магазин', price: 1000, income: 120}
+            ];
+            
+            let html = '';
+            businesses.forEach(biz => {
+                html += `
+                    <div style="background:rgba(255,255,255,0.1); padding:10px; margin:10px 0; border-radius:10px;">
+                        <div>${biz.name}</div>
+                        <div>Цена: $${biz.price}</div>
+                        <div>Доход: $${biz.income}/час</div>
+                        <button onclick="buyBusiness(${biz.price})" 
+                                style="margin-top:5px; padding:5px 10px;"
+                                ${money < biz.price ? 'disabled' : ''}>
+                            ${money >= biz.price ? 'Купить' : 'Не хватает'}
+                        </button>
+                    </div>
+                `;
+            });
+            
+            document.getElementById('businesses').innerHTML = html;
+        }
+        
+        function buyBusiness(price) {
+            if (money >= price) {
+                money -= price;
+                level++;
+                updateUI();
+                tg.showPopup({title: 'Успех!', message: 'Бизнес куплен!'});
+            }
+        }
+        
+        // Инициализация
+        tg.ready();
+        updateUI();
+    </script>
+</body>
+</html>
