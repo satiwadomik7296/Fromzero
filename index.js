@@ -60,7 +60,7 @@ bot.onText(/\/start/, (msg) => {
       [{ text: '💼 Работать', callback_data: 'work' }],
       [{ text: '🏪 Бизнесы', callback_data: 'businesses' }],
       [{ text: '💰 Баланс', callback_data: 'balance' }],
-      [{ text: '🎮 Открыть игру', web_app: { url: 'https://твоя-ссылка.netlify.app' } }]
+      [{ text: '🎮 Открыть игру', web_app: { url: 'https://tubular-monstera-e9d3e5.netlify.app' } }]
     ]
   };
   
