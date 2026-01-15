@@ -1,4 +1,7 @@
 {
+  "engines": {
+    "node": "18.x"
+  },
   "name": "tycoon-game",
   "version": "1.0.0",
   "main": "index.js",
